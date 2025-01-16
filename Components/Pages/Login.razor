@@ -1,0 +1,180 @@
+﻿@page "/login"
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager NavigationManager
+@inject UserSessionService UserSessionService
+
+<h3 class="title">Welcome To Personal Expense Tracker</h3>
+
+<div class="form-container">
+    <EditForm Model="@userDetails" OnValidSubmit="HandleLogin">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-left">
+            <div class="form-row">
+                <label for="username">Username</label>
+                <InputText id="username" class="form-control" @bind-Value="userDetails.Username" />
+            </div>
+
+            <div class="form-row">
+                <label for="password">Password</label>
+                <InputText id="password" type="password" class="form-control" @bind-Value="userDetails.Password" />
+            </div>
+
+            <div class="form-row">
+                <label for="currency">Preferred Currency</label>
+                <InputSelect id="currency" class="form-control" @bind-Value="userDetails.PreferredCurrency">
+                    <option value="">Select Currency</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GBP">GBP</option>
+                    <option value="NPR">NPR</option>
+                    <option value="INR">INR</option>
+                </InputSelect>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">Login</button>
+        </div>
+    </EditForm>
+</div>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: black;
+        color: white;
+    }
+
+    .title {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin: 20px 0;
+    }
+
+    .form-container {
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 2px solid white;
+        border-radius: 10px;
+        background-color: #111;
+        color: white;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-left {
+        width: 100%;
+    }
+
+    .form-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    label {
+        flex: 1;
+        font-size: 16px;
+        text-align: left;
+    }
+
+    .form-control {
+        flex: 2;
+        padding: 10px;
+        border: 1px solid white;
+        border-radius: 5px;
+        background-color: black;
+        color: white;
+    }
+
+        .form-control::placeholder {
+            color: #aaa;
+        }
+
+    .input-validation-error {
+        border-color: red;
+    }
+
+    .validation-message {
+        color: red;
+        font-size: 14px;
+    }
+
+    .button-group {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .footer-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        padding: 0 20px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        border: 2px solid white;
+        background-color: black;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+        .btn:hover {
+            background-color: white;
+            color: black;
+        }
+
+    .btn-primary {
+        font-weight: bold;
+    }
+
+    .btn-secondary {
+        font-weight: normal;
+    }
+
+    .alert-success {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #28a745;
+        color: white;
+        border-radius: 5px;
+        text-align: center;
+    }
+</style>
+
+@code {
+    private UserDetails userDetails = new();
+
+    private void HandleLogin()
+    {
+        // Store username and preferred currency in the session service
+        UserSessionService.Username = userDetails.Username;
+        UserSessionService.PreferredCurrency = userDetails.PreferredCurrency;
+
+        // Navigate to the dashboard
+        NavigationManager.NavigateTo("/dashboard");
+    }
+
+    public class UserDetails
+    {
+        [Required(ErrorMessage = "Username is required.")]
+        public string Username { get; set; }
+
+        [Required(ErrorMessage = "Password is required.")]
+        public string Password { get; set; }
+
+        [Required(ErrorMessage = "Preferred currency is required.")]
+        public string PreferredCurrency { get; set; }
+    }
+}

@@ -1,0 +1,235 @@
+﻿@page "/add-transaction"
+@inject NavigationManager NavigationManager
+@inject TransactionService TransactionService
+@inject IJSRuntime JSRuntime
+
+<h3 class="title">Add Transaction</h3>
+
+<EditForm Model="transaction" OnValidSubmit="SaveTransaction">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-container">
+        <div class="form-left">
+            <!-- Date Field -->
+            <div class="form-row">
+                <label for="date">Date:</label>
+                <InputDate id="date" class="form-control" @bind-Value="transaction.Date" max="@todayDate" />
+                <ValidationMessage For="@(() => transaction.Date)" />
+            </div>
+
+            <!-- Amount Field -->
+            <div class="form-row">
+                <label for="amount">Amount:</label>
+                <InputNumber id="amount" class="form-control" @bind-Value="transaction.Amount" />
+                <ValidationMessage For="@(() => transaction.Amount)" />
+            </div>
+
+            <!-- Transaction Type Field -->
+            <div class="form-row">
+                <label for="type">Transaction Type:</label>
+                <InputSelect id="type" class="form-control" @bind-Value="transaction.Type">
+                    <option value="">Select Type</option>
+                    <option value="Debit">Debit</option>
+                    <option value="Credit">Credit</option>
+                </InputSelect>
+                <ValidationMessage For="@(() => transaction.Type)" />
+            </div>
+
+            <!-- Category Field -->
+            <div class="form-row">
+                <label for="category">Category:</label>
+                <InputSelect id="category" class="form-control" @bind-Value="transaction.Category">
+                    <option value="">Select Category</option>
+                    <option value="Utilities">Utilities</option>
+                    <option value="Salary">Salary</option>
+                    <option value="Groceries">Groceries</option>
+                </InputSelect>
+                <ValidationMessage For="@(() => transaction.Category)" />
+            </div>
+
+            <!-- Notes Field -->
+            <div class="form-row">
+                <label for="notes">Notes:</label>
+                <InputText id="notes" class="form-control" @bind-Value="transaction.Notes" />
+                <ValidationMessage For="@(() => transaction.Notes)" />
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-secondary" @onclick="GoToViewTransactions">View Transactions</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@if (isTransactionSaved)
+{
+    <div class="alert-success">
+        Transaction Saved Successfully!
+    </div>
+}
+
+<div class="footer-buttons">
+    <button class="btn btn-secondary" @onclick="GoToDashboard">Back</button>
+    <button class="btn btn-secondary" @onclick="Logout">Logout</button>
+</div>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: black;
+        color: white;
+    }
+
+    .title {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin: 20px 0;
+    }
+
+    .form-container {
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 2px solid white;
+        border-radius: 10px;
+        background-color: #111;
+        color: white;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-left {
+        width: 100%;
+    }
+
+    .form-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    label {
+        flex: 1;
+        font-size: 16px;
+        text-align: left;
+    }
+
+    .form-control {
+        flex: 2;
+        padding: 10px;
+        border: 1px solid white;
+        border-radius: 5px;
+        background-color: black;
+        color: white;
+    }
+
+        .form-control::placeholder {
+            color: #aaa;
+        }
+
+    .input-validation-error {
+        border-color: red;
+    }
+
+    .validation-message {
+        color: red;
+        font-size: 14px;
+    }
+
+    .button-group {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .footer-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        padding: 0 20px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        border: 2px solid white;
+        background-color: black;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+        .btn:hover {
+            background-color: white;
+            color: black;
+        }
+
+    .btn-primary {
+        font-weight: bold;
+    }
+
+    .btn-secondary {
+        font-weight: normal;
+    }
+
+    .alert-success {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #28a745;
+        color: white;
+        border-radius: 5px;
+        text-align: center;
+    }
+</style>
+
+@code {
+    private Transaction transaction = new Transaction();
+    private bool isTransactionSaved = false;
+    private string todayDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+    protected override void OnInitialized()
+    {
+        transaction.Date = DateTime.Now;
+    }
+
+    private async Task SaveTransaction()
+    {
+        if (!string.IsNullOrEmpty(transaction.Type) &&
+            !string.IsNullOrEmpty(transaction.Category) &&
+            transaction.Amount > 0)
+        {
+            // Save the transaction to the service
+            TransactionService.SaveTransaction(transaction);
+
+            // Show a success message
+            await JSRuntime.InvokeVoidAsync("alert", "Transaction saved successfully!");
+
+            // Set the flag to display success message
+            isTransactionSaved = true;
+
+            // Redirect to the View Transactions page
+            NavigationManager.NavigateTo("/view-transaction");
+        }
+    }
+
+    private void GoToDashboard()
+    {
+        NavigationManager.NavigateTo("/dashboard");
+    }
+
+    private void Logout()
+    {
+        NavigationManager.NavigateTo("/login");
+    }
+
+    private void GoToViewTransactions()
+    {
+        NavigationManager.NavigateTo("/view-transaction");
+    }
+}

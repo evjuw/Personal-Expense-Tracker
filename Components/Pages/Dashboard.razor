@@ -1,0 +1,253 @@
+﻿@page "/dashboard"
+@inject NavigationManager NavigationManager
+@inject UserSessionService UserSessionService
+
+<h3 class="title">Welcome to Dashboard</h3>
+
+<div class="dashboard-container">
+    
+    <div class="header">
+        <h1>Personal Expense Tracker</h1>
+    </div>
+
+    
+    <div class="welcome-section">
+        <h2>Welcome, @UserSessionService.Username</h2>
+        <p>Preferred Currency: @UserSessionService.PreferredCurrency</p>
+    </div>
+
+   
+    <div class="overview-horizontal">
+        <div class="overview-box">Inflow: @UserSessionService.PreferredCurrency 5000</div>
+        <div class="overview-box">Outflow: @UserSessionService.PreferredCurrency 3000</div>
+        <div class="overview-box">Debt: @UserSessionService.PreferredCurrency 1000</div>
+        <div class="overview-box">Credit: @UserSessionService.PreferredCurrency 2000</div>
+        <div class="pie-chart-container">
+            <div class="pie-chart" style="background: conic-gradient(
+                #1e90ff 0% 40%,
+                #4682b4 40% 60%,
+                #5f9ea0 60% 80%,
+                #87cefa 80% 100%
+            );">
+                <p>Inflow & Outflow Breakdown</p>
+            </div>
+        </div>
+    </div>
+
+   
+    <div class="action-buttons">
+        <button class="btn btn-secondary" @onclick="AddNewTransaction">Add New Transaction</button>
+        <button class="btn btn-secondary" @onclick="ManageDebts">Manage Debts</button>
+        <button class="btn btn-secondary" @onclick="Settings">Settings</button>
+    </div>
+
+    <!-- Lowest Transactions Section -->
+    <div class="transactions-section">
+        <h3>Lowest 5 Transactions</h3>
+        <table class="transactions-table">
+            <thead>
+                <tr>
+                    <th>Transaction</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Transaction 1</td>
+                    <td>@UserSessionService.PreferredCurrency 50</td>
+                </tr>
+                <tr>
+                    <td>Transaction 2</td>
+                    <td>@UserSessionService.PreferredCurrency 60</td>
+                </tr>
+                <tr>
+                    <td>Transaction 3</td>
+                    <td>@UserSessionService.PreferredCurrency 70</td>
+                </tr>
+                <tr>
+                    <td>Transaction 4</td>
+                    <td>@UserSessionService.PreferredCurrency 80</td>
+                </tr>
+                <tr>
+                    <td>Transaction 5</td>
+                    <td>@UserSessionService.PreferredCurrency 90</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pie Chart for Lowest 5 Transactions -->
+    <div class="pie-chart-container-bottom">
+        <div class="pie-chart" style="background: conic-gradient(
+            #ff6347 0% 20%,
+            #ffa07a 20% 40%,
+            #ff4500 40% 60%,
+            #cd5c5c 60% 80%,
+            #f08080 80% 100%
+        );">
+            <p>Lowest 5 Transactions</p>
+        </div>
+    </div>
+
+    <!-- Footer Buttons -->
+    <div class="footer-buttons">
+        <button class="btn" @onclick="Back">Back</button>
+        <button class="btn" @onclick="Logout">Logout</button>
+    </div>
+</div>
+
+@code {
+    private void AddNewTransaction()
+    {
+        NavigationManager.NavigateTo("/add-transaction");
+    }
+
+    private void ManageDebts()
+    {
+        NavigationManager.NavigateTo("/manage-debt");
+    }
+
+    private void Settings()
+    {
+        NavigationManager.NavigateTo("/settings");
+    }
+
+    private void Back()
+    {
+        NavigationManager.NavigateTo("/dashboard");  
+    }
+
+    private void Logout()
+    {
+        // Clear the session data when the user logs out
+        UserSessionService.ClearSession();
+        NavigationManager.NavigateTo("/login");
+    }
+}
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: black;
+        color: white;
+    }
+
+    .dashboard-container {
+        text-align: center;
+        padding: 20px;
+        min-height: 80vh; 
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .header {
+        margin-bottom: 20px;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .welcome-section {
+        margin-bottom: 20px;
+        font-size: 18px;
+    }
+
+    .overview-horizontal {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .overview-box {
+        border: 2px solid white;
+        padding: 20px;
+        border-radius: 10px;
+        width: 150px;
+        background-color: black;
+        color: white;
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .pie-chart-container {
+        flex-shrink: 0;
+    }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .btn {
+        background-color: white;
+        color: black;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+        .btn:hover {
+            background-color: black;
+            color: white;
+            border: 2px solid white;
+        }
+
+    .transactions-section {
+        margin: 20px 0;
+        font-size: 16px;
+    }
+
+    .transactions-table {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+        border-collapse: collapse;
+        color: white;
+        text-align: left;
+    }
+
+        .transactions-table th, .transactions-table td {
+            border: 1px solid white;
+            padding: 10px;
+        }
+
+        .transactions-table th {
+            background-color: #333;
+        }
+
+    .pie-chart {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: white;
+        text-align: center;
+    }
+
+    .footer-buttons {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20px;
+        margin-top: 20px;
+    }
+
+    
+    .pie-chart-container-bottom {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+    }
+</style>

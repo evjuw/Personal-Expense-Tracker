@@ -1,0 +1,188 @@
+﻿@page "/manage-debt"
+@using System.ComponentModel.DataAnnotations
+@using static Personal_Expense_Tracker.Components.Pages.Add_New_Debt
+
+<h1 class="title">Manage Debts</h1>
+
+<div class="debt-table-container">
+    <table class="debt-table">
+        <thead>
+            <tr>
+                <th>Source</th>
+                <th>Due Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (debts.Any())
+            {
+                @foreach (var debt in debts)
+                {
+                    <tr>
+                        <td>@debt.Source</td>
+                        <td>@debt.DueDate.ToShortDateString()</td>
+                        <td>@debt.Amount</td>
+                        <td>@debt.Status</td>
+                        <td>
+                            <button class="action-button" @onclick="() => ClearDebt(debt)">Clear</button>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5">No debts found.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="add-debt-container">
+    <button class="add-debt-button" @onclick="NavigateToAddDebt">[ Add New Debts ]</button>
+</div>
+
+<div class="footer-buttons">
+    <button class="btn btn-secondary" @onclick="GoToDashboard">Back</button>
+    <button class="btn btn-secondary" @onclick="Logout">Logout</button>
+</div>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: black;
+        color: white;
+    }
+
+    .title {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin: 20px 0;
+    }
+
+    .debt-table-container {
+        margin: 20px auto;
+        width: 80%;
+        border: 2px solid white;
+        border-radius: 10px;
+        padding: 10px;
+        background-color: black;
+    }
+
+    .debt-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: center;
+    }
+
+        .debt-table th, .debt-table td {
+            border: 1px solid white;
+            padding: 10px;
+        }
+
+        .debt-table th {
+            font-weight: bold;
+            background-color: black;
+            color: white;
+        }
+
+    .add-debt-container {
+        text-align: center;
+        margin: 20px 0;
+    }
+
+    .add-debt-button {
+        padding: 15px 30px;
+        font-size: 18px;
+        font-weight: bold;
+        background-color: gray;
+        color: white;
+        border: 2px solid white;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+        .add-debt-button:hover {
+            background-color: white;
+            color: black;
+        }
+
+    .footer-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        padding: 0 20px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        border: 2px solid white;
+        background-color: black;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+        .btn:hover {
+            background-color: white;
+            color: black;
+        }
+
+    .action-button {
+        padding: 5px 15px;
+        background-color: #1e90ff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        .action-button:hover {
+            background-color: #104e8b;
+        }
+</style>
+
+@code {
+    private List<DebtModel> debts = new();
+
+    [Inject]
+    private DebtService DebtService { get; set; }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // Fetch debts from DebtService
+        debts = DebtService.GetAllDebts();
+    }
+
+    private void ClearDebt(DebtModel debt)
+    {
+        debt.Status = "Cleared";
+    }
+
+    private void NavigateToAddDebt()
+    {
+        NavigationManager.NavigateTo("/add-new-debt");
+    }
+
+    private void GoToDashboard()
+    {
+        NavigationManager.NavigateTo("/dashboard");
+    }
+
+    private void Logout()
+    {
+        NavigationManager.NavigateTo("/login");
+    }
+}

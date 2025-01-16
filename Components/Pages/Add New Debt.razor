@@ -1,0 +1,210 @@
+﻿@page "/add-new-debt"
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager NavigationManager
+@inject DebtService DebtService
+
+<h3 class="title">Add New Debt</h3>
+
+<div class="form-container">
+    <EditForm Model="@NewDebt" OnValidSubmit="SaveDebt">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-row">
+            <label for="source">Source</label>
+            <select id="source" class="form-control" @bind="NewDebt.Source">
+                <option value="">Select Source</option>
+                <option value="Friend">Friend</option>
+                <option value="Credit">Credit</option>
+                <option value="Other">Other</option>
+            </select>
+            <ValidationMessage For="@(() => NewDebt.Source)" class="validation-message" />
+        </div>
+
+        <div class="form-row">
+            <label for="due-date">Due Date</label>
+            <input id="due-date" type="date" class="form-control" @bind="NewDebt.DueDate" />
+            <ValidationMessage For="@(() => NewDebt.DueDate)" class="validation-message" />
+        </div>
+
+        <div class="form-row">
+            <label for="amount">Amount</label>
+            <input id="amount" type="number" class="form-control" @bind="NewDebt.Amount" />
+            <ValidationMessage For="@(() => NewDebt.Amount)" class="validation-message" />
+        </div>
+
+        <div class="form-row">
+            <label for="status">Status</label>
+            <input id="status" type="text" class="form-control" @bind="NewDebt.Status" />
+            <ValidationMessage For="@(() => NewDebt.Status)" class="validation-message" />
+        </div>
+
+        <div class="form-row">
+            <label for="action">Action</label>
+            <input id="action" type="text" class="form-control" @bind="NewDebt.Action" />
+            <ValidationMessage For="@(() => NewDebt.Action)" class="validation-message" />
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-secondary" @onclick="Back">Back</button>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-secondary" @onclick="Logout">Logout</button>
+        </div>
+    </EditForm>
+</div>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: black;
+        color: white;
+    }
+
+    .title {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin: 20px 0;
+    }
+
+    .form-container {
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 2px solid white;
+        border-radius: 10px;
+        background-color: #111;
+        color: white;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    label {
+        flex: 1;
+        font-size: 16px;
+        text-align: left;
+    }
+
+    .form-control {
+        flex: 2;
+        padding: 10px;
+        border: 1px solid white;
+        border-radius: 5px;
+        background-color: black;
+        color: white;
+    }
+
+        .form-control::placeholder {
+            color: #aaa;
+        }
+
+    .input-validation-error {
+        border-color: red;
+    }
+
+    .validation-message {
+        color: red;
+        font-size: 14px;
+    }
+
+    .button-group {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .footer-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        padding: 0 20px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        border: 2px solid white;
+        background-color: black;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+        .btn:hover {
+            background-color: white;
+            color: black;
+        }
+
+    .btn-primary {
+        font-weight: bold;
+    }
+
+    .btn-secondary {
+        font-weight: normal;
+    }
+
+    .alert-success {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #28a745;
+        color: white;
+        border-radius: 5px;
+        text-align: center;
+    }
+</style>
+
+@code {
+    private DebtModel NewDebt = new DebtModel();
+
+    protected override void OnInitialized()
+    {
+        NewDebt.DueDate = DateTime.Now;
+    }
+
+    private void SaveDebt()
+    {
+        DebtService.AddDebt(NewDebt); 
+        NavigationManager.NavigateTo("/manage-debt");
+    }
+
+    private void Back()
+    {
+        NavigationManager.NavigateTo("/manage-debt");
+    }
+
+    private void Logout()
+    {
+        NavigationManager.NavigateTo("/login");
+    }
+
+    public class DebtModel
+    {
+        [Required(ErrorMessage = "Source is required.")]
+        public string Source { get; set; }
+
+        [Required(ErrorMessage = "Due Date is required.")]
+        [DataType(DataType.Date)]
+        public DateTime DueDate { get; set; }
+
+        [Required(ErrorMessage = "Amount is required.")]
+        [Range(1, double.MaxValue, ErrorMessage = "Amount must be greater than 0.")]
+        public decimal Amount { get; set; }
+
+        [Required(ErrorMessage = "Status is required.")]
+        [StringLength(50, ErrorMessage = "Status cannot exceed 50 characters.")]
+        public string Status { get; set; }
+
+        [Required(ErrorMessage = "Action is required.")]
+        [StringLength(50, ErrorMessage = "Action cannot exceed 50 characters.")]
+        public string Action { get; set; }
+    }
+}

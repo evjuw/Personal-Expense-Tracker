@@ -1,0 +1,135 @@
+﻿@page "/settings"
+@inject NavigationManager NavigationManager
+@inject UserSessionService UserSessionService
+
+<style>
+    body {
+        background-color: #000;
+        color: #fff;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 20px;
+    }
+
+    h3 {
+        font-size: 2em;
+        margin-bottom: 30px;
+        text-transform: uppercase;
+    }
+
+    label {
+        display: block;
+        font-size: 1em;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+    }
+
+    input[type="text"], select {
+        width: 300px;
+        padding: 10px;
+        margin: 10px 0;
+        background-color: #333;
+        color: #fff;
+        border: 1px solid #555;
+        border-radius: 5px;
+    }
+
+    button {
+        background-color: #555;
+        color: #fff;
+        padding: 10px 20px;
+        margin: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-transform: uppercase;
+    }
+
+        button:hover {
+            background-color: #777;
+        }
+
+    .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid white;
+        border-radius: 10px;
+        background-color: #111;
+    }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .footer-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+        .footer-buttons button {
+            width: 150px;
+        }
+</style>
+
+<div class="form-container">
+    <h3>Settings</h3>
+
+    <div>
+        <label for="username">Username:</label>
+        <input id="username" type="text" @bind="UserSessionService.Username" />
+    </div>
+
+    <div>
+        <label for="currency">Preferred Currency:</label>
+        <select id="currency" @bind="UserSessionService.PreferredCurrency">
+            <option value="USD">USD</option>
+            <option value="NRS">NRS</option>
+            <option value="INR">INR</option>
+        </select>
+    </div>
+
+    <h4>Tag Management</h4>
+    <div>
+        <label for="customTags">Custom Tags:</label>
+        <div>
+            <input id="customTags" type="text" style="display: inline-block; width: 200px;" />
+            <button style="display: inline-block;">+ Add</button>
+        </div>
+    </div>
+
+    <h4>Data Management</h4>
+    <div class="action-buttons">
+        <button>Export Data</button>
+        <button>Import Data</button>
+    </div>
+
+    <div class="footer-buttons">
+        <button @onclick="GoToDashboard">Back</button>
+        <button @onclick="SaveSettings">Save</button>
+        <button @onclick="Logout">Logout</button>
+    </div>
+</div>
+
+@code {
+    private void GoToDashboard()
+    {
+        NavigationManager.NavigateTo("/dashboard");
+    }
+
+    private void SaveSettings()
+    {
+       
+        Console.WriteLine("Settings saved.");
+    }
+
+    private void Logout()
+    {
+        
+        UserSessionService.ClearSession();
+        NavigationManager.NavigateTo("/login");
+    }
+}
